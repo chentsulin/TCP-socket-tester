@@ -77,16 +77,6 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
         
         println(bytesWritten)
         
-//        let serverAddress: CFString = host as NSString
-//        let serverPort: UInt32 = UInt32(port)
-//        
-//        var readStream: Unmanaged<CFReadStream>?
-//        var writeStream: Unmanaged<CFWriteStream>?
-//        
-//        CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, serverAddress, serverPort, &readStream, &writeStream)
-//        CFReadStreamOpen(readStream)
-//        CFWriteStreamOpen(writeStream)
-        
     }
     
     func buttonAction(sender:UIButton!) {
