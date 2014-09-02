@@ -103,11 +103,11 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
             println("NSStreamEvent.HasBytesAvailable")
         case NSStreamEvent.HasSpaceAvailable:
             println("NSStreamEvent.HasSpaceAvailable")
-//            if theStream is NSInputStream {
-//                if theStream.hasBytesAvailable() {
-//                    println("hasBytesAvailable")
-//                }
-//            }
+                if let inputStream = theStream as? NSInputStream {
+                    if inputStream.hasBytesAvailable {
+                        println("hasBytesAvailable")
+                    }
+                }
         case NSStreamEvent.ErrorOccurred:
             println("NSStreamEvent.ErrorOccurred")
         case NSStreamEvent.EndEncountered:
