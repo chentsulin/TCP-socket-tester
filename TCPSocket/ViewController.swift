@@ -72,11 +72,14 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
         println(data)
         println(data.length)
         
-        self.input?.delegate = self
-        self.output?.delegate = self
+        self.input!.delegate  = self
+        self.output!.delegate = self
         
-        self.input?.open()
-        self.output?.open()
+        self.input!.scheduleInRunLoop( NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        self.output!.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        
+        self.input!.open()
+        self.output!.open()
 
 
         let bytesWritten = self.output!.write(UnsafePointer(data.bytes), maxLength: data.length)
@@ -101,24 +104,25 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
             println("NSStreamEvent.OpenCompleted")
         case NSStreamEvent.HasBytesAvailable:
             println("NSStreamEvent.HasBytesAvailable")
+            if let inputStream = theStream as? NSInputStream {
+                println("is NSInputStream")
+                if inputStream.hasBytesAvailable {
+                    println("hasBytesAvailable")
+                    let bufferSize = 1024
+                    var buffer = Array<UInt8>(count: bufferSize, repeatedValue: 0)
+                    
+                    var bytesRead: Int = inputStream.read(&buffer, maxLength: bufferSize)
+                    println(bytesRead)
+                    if bytesRead >= 0 {
+                        var output: String = NSString(bytes: &buffer, length: bytesRead, encoding: NSUTF8StringEncoding)
+                        println(output)
+                    } else {
+                        // Handle error
+                    }
+                }
+            }
         case NSStreamEvent.HasSpaceAvailable:
             println("NSStreamEvent.HasSpaceAvailable")
-                if let inputStream = theStream as? NSInputStream {
-                    println("is NSInputStream")
-                    if inputStream.hasBytesAvailable {
-                        println("hasBytesAvailable")
-                        let bufferSize = 1024
-                        var buffer = Array<UInt8>(count: bufferSize, repeatedValue: 0)
-                        
-                        var bytesRead: Int = inputStream.read(&buffer, maxLength: bufferSize)
-                        println(bytesRead)
-                        if bytesRead >= 0 {
-                            var output: String = NSString(bytes: &buffer, length: bytesRead, encoding: NSUTF8StringEncoding)
-                            println(output)
-                        } else {
-                            // Handle error
-                        }                    }
-                }
         case NSStreamEvent.ErrorOccurred:
             println("NSStreamEvent.ErrorOccurred")
         case NSStreamEvent.EndEncountered:
