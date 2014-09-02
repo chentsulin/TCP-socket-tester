@@ -104,9 +104,20 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
         case NSStreamEvent.HasSpaceAvailable:
             println("NSStreamEvent.HasSpaceAvailable")
                 if let inputStream = theStream as? NSInputStream {
+                    println("is NSInputStream")
                     if inputStream.hasBytesAvailable {
                         println("hasBytesAvailable")
-                    }
+                        let bufferSize = 1024
+                        var buffer = Array<UInt8>(count: bufferSize, repeatedValue: 0)
+                        
+                        var bytesRead: Int = inputStream.read(&buffer, maxLength: bufferSize)
+                        println(bytesRead)
+                        if bytesRead >= 0 {
+                            var output: String = NSString(bytes: &buffer, length: bytesRead, encoding: NSUTF8StringEncoding)
+                            println(output)
+                        } else {
+                            // Handle error
+                        }                    }
                 }
         case NSStreamEvent.ErrorOccurred:
             println("NSStreamEvent.ErrorOccurred")
