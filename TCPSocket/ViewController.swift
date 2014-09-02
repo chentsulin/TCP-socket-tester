@@ -10,7 +10,10 @@ import UIKit
 import Foundation
 
 class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
-                            
+   
+    var input : NSInputStream?
+    var output: NSOutputStream?
+    
     override func viewDidLoad() {
         
         super.viewDidLoad()
@@ -56,13 +59,12 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
     
     func connectToSocket(host: String, port: Int) {
     
-        var input : NSInputStream?
-        var output: NSOutputStream?
+        
         
         println(host)
         println(port)
         
-        NSStream.getStreamsToHostWithName(host, port: port, inputStream: &input, outputStream: &output)
+        NSStream.getStreamsToHostWithName(host, port: port, inputStream: &(self.input), outputStream: &(self.output))
         
         let str = "test"
         let data = str.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!
@@ -70,13 +72,49 @@ class ViewController: UIViewController, NSStreamDelegate, UITextFieldDelegate  {
         println(data)
         println(data.length)
         
-        output?.open()
+        self.input?.delegate = self
+        self.output?.delegate = self
+        
+        self.input?.open()
+        self.output?.open()
 
 
-        let bytesWritten = output!.write(UnsafePointer(data.bytes), maxLength: data.length)
+        let bytesWritten = self.output!.write(UnsafePointer(data.bytes), maxLength: data.length)
         
         println(bytesWritten)
         
+//        while(true) {
+//        
+//            sleep(2)
+//        }
+        
+    }
+    
+    func stream(theStream: NSStream!, handleEvent streamEvent: NSStreamEvent) {
+    
+        println("receive")
+        
+        switch streamEvent {
+        case NSStreamEvent.None:
+            println("NSStreamEvent.None")
+        case NSStreamEvent.OpenCompleted:
+            println("NSStreamEvent.OpenCompleted")
+        case NSStreamEvent.HasBytesAvailable:
+            println("NSStreamEvent.HasBytesAvailable")
+        case NSStreamEvent.HasSpaceAvailable:
+            println("NSStreamEvent.HasSpaceAvailable")
+//            if theStream is NSInputStream {
+//                if theStream.hasBytesAvailable() {
+//                    println("hasBytesAvailable")
+//                }
+//            }
+        case NSStreamEvent.ErrorOccurred:
+            println("NSStreamEvent.ErrorOccurred")
+        case NSStreamEvent.EndEncountered:
+            println("NSStreamEvent.EndEncountered")
+        default:
+            println("default")
+        }
     }
     
     func buttonAction(sender:UIButton!) {
